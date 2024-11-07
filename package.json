@@ -1,0 +1,71 @@
+{
+  "name": "zyd-design-plus",
+  "version": "0.0.1",
+  "description": "rollup build template",
+  "keywords": [
+    "rollup",
+    "lib",
+    "build",
+    "template"
+  ],
+  "main": "./dist/index-es.js",
+  "type": "module",
+  "sideEffects": false,
+  "scripts": {
+    "dev:docs": "vuepress dev docs",
+    "build:docs": "vuepress build docs",
+    "gen:docs": "vue-docgen",
+    "lib:build": "rollup -c"
+  },
+  "files": [
+    "dist"
+  ],
+  "author": "xiaobai.li",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xiaobaili1992/zyd-design-plus.git"
+  },
+  "homepage": "https://xiaobaili1992.github.io/zyd-design-plus/",
+  "devDependencies": {
+    "@babel/core": "^7.26.0",
+    "@babel/plugin-proposal-optional-chaining": "^7.21.0",
+    "@babel/preset-env": "^7.26.0",
+    "@rollup/plugin-babel": "^6.0.4",
+    "@rollup/plugin-commonjs": "^25.0.7",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-terser": "^0.4.4",
+    "@vue/babel-plugin-transform-vue-jsx": "^1.4.0",
+    "@vue/babel-preset-jsx": "^1.4.0",
+    "@vue/cli-plugin-babel": "^5.0.8",
+    "@vuepress/core": "^1.9.10",
+    "@vuepress/plugin-register-components": "^1.9.10",
+    "dayjs": "^1.11.11",
+    "postcss": "^8.1",
+    "rollup": "^4.12.0",
+    "rollup-plugin-livereload": "^2.0.5",
+    "rollup-plugin-serve": "^1.1.1",
+    "rollup-plugin-vue": "6.0.0",
+    "sass": "^1.80.6",
+    "sass-loader": "10",
+    "vue-docgen-api": "^4.79.1",
+    "vue-docgen-cli": "^4.79.0",
+    "vuepress": "^1.9.10"
+  },
+  "dependencies": {
+    "core-js": "2",
+    "element-ui": "^2.15.14",
+    "rollup-plugin-postcss": "^4.0.2",
+    "vue": "^3.5.12",
+    "vue-server-renderer": "2.6.14",
+    "vue-template-compiler": "2.6.14"
+  },
+  "peerDependencies": {
+    "dayjs": "^1.11.11",
+    "element-ui": "^2.15.14",
+    "vue": "2.6.14"
+  },
+  "engines": {
+    "node": ">=18.18.0"
+  }
+}
