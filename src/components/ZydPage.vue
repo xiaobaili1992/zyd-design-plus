@@ -16,7 +16,9 @@
               @input="(value) => commonFn(item, 'input', value)"
               @clear="(value) => commonFn(item, 'clear', value)"
             >
-              <svg-icon slot="prefix" iconClass="dee-search" class="input-icon" />
+              <template #prefix>
+                <svg-icon iconClass="dee-search" class="input-icon" />
+              </template>
             </el-input>
             <el-select
               class="el-select"
@@ -239,12 +241,7 @@
                     :render="item.render"
                     :index="scope.$index"
                   /> -->
-                  <slot
-                    name="bodyCell"
-                    :column="item"
-                    :record="scope.row"
-                    :index="scope.$index"
-                  >
+                  <slot name="bodyCell" :column="item" :record="scope.row" :index="scope.$index">
                     <template>
                       <el-tooltip
                         v-if="item.tooltip && scope.row[item.key]"
@@ -294,7 +291,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import dayjs from 'dayjs';
-import RenderCol from '../utils/RenderCol';
+// import RenderCol from '../utils/RenderCol';
 
 const props = defineProps({
   searchConfig: {
@@ -320,26 +317,24 @@ const props = defineProps({
         total: 0,
         pageSize: 10,
         currentPage: 1,
-        sizeChange: () => { },
-        currentChange: () => { },
+        sizeChange: () => {},
+        currentChange: () => {},
         attrs: {},
       };
     },
   },
 });
 
-const emit = defineEmits(['onSearch', 'onReset'])
+const emit = defineEmits(['onSearch', 'onReset']);
 
 const { searchConfig, tableConfig } = props;
-
-console.error("==================> tableConfig", tableConfig)
 
 const searchValues = ref({});
 
 onMounted(() => {
-  const initSearchValues = setSearchValue()
-  searchValues.value = {...initSearchValues};
-})
+  const initSearchValues = setSearchValue();
+  searchValues.value = { ...initSearchValues };
+});
 
 const setSearchValue = () => {
   const obj = {};
@@ -347,7 +342,7 @@ const setSearchValue = () => {
     obj[item.key] = item.defaultValue;
   });
   return obj;
-}
+};
 
 const commonFn = (item, type, value) => {
   item?.events?.[type]?.(value);
@@ -358,7 +353,7 @@ const tableCommonFn = (events, type, value, value2, value3, value4) => {
 };
 
 const selectableRow = (row) => {
-  return row?.selectable!= false;
+  return row?.selectable != false;
 };
 
 const renderColumnContent = (item, record) => {
@@ -374,14 +369,14 @@ const renderColumnContent = (item, record) => {
 };
 
 const onSearch = () => {
-  emit('onSearch', searchValues.value)
-}
+  emit('onSearch', searchValues.value);
+};
 
 const onReset = () => {
-  const initSearchValues = setSearchValue()
-  searchValues.value = {...initSearchValues}
-  emit('onReset', searchValues.value)
-}
+  const initSearchValues = setSearchValue();
+  searchValues.value = { ...initSearchValues };
+  emit('onReset', searchValues.value);
+};
 </script>
 
 <style lang="scss" scoped>
@@ -440,11 +435,9 @@ const onReset = () => {
         margin-left: 8px;
       }
 
-      ::v-deep {
-        .el-form {
-          .el-form-item {
-            margin: 0 12px 16px 0;
-          }
+      :deep(.el-form) {
+        .el-form-item {
+          margin: 0 12px 16px 0;
         }
         .el-select__wrapper {
           width: 100%;
@@ -465,71 +458,71 @@ const onReset = () => {
     }
 
     .table-pagination-container {
-      // display: flex;
-      // flex: 1;
-      // flex-direction: column;
+      display: flex;
+      flex: 1;
+      flex-direction: column;
 
-      // .table-container {
-      //   position: relative;
-      //   flex: 1;
+      .table-container {
+        position: relative;
+        flex: 1;
 
-      //   .table-content {
-      //     position: absolute;
-      //     top: 0;
-      //     bottom: 0;
-      //     left: 0;
-      //     right: 0;
-      //     .table-cell {
-      //       overflow: hidden;
-      //       text-overflow: ellipsis;
-      //       white-space: nowrap;
-      //     }
-      //     ::v-deep .el-table-column--selection {
-      //       .cell {
-      //         padding-left: 14px;
-      //       }
-      //     }
-      //     ::v-deep {
-      //       .el-table::before,
-      //       .el-table__fixed::before,
-      //       .el-table__fixed-right::before {
-      //         height: 0;
-      //       }
-      //       .el-table__row {
-      //         .el-table__cell {
-      //           padding: 15px 0;
-      //         }
-      //         // &:last-child {
-      //         //   .el-table__cell {
-      //         //     border: none;
-      //         //   }
-      //         // }
-      //       }
-      //       .el-table__header {
-      //         th {
-      //           padding: 9px 0 10px 0;
-      //           color: #333;
-      //           background: #f7f7f7 !important;
-      //           div {
-      //             font-family: PingFangSC, PingFang SC;
-      //             font-weight: bold;
-      //             font-size: 14px;
-      //             color: #333333;
-      //           }
-      //         }
-      //       }
-      //       .el-table__row--striped {
-      //         td {
-      //           background: #f7fcff !important;
-      //         }
-      //       }
-      //       .el-table--enable-row-hover .el-table__body tr:hover > td.el-table__cell,
-      //       .el-table__body tr.hover-row > td.el-table__cell {
-      //         background: rgba(35, 85, 216, 0.06) !important;
-      //       }
-      //     }
-      //   }
-      // }
+        .table-content {
+          position: absolute;
+          top: 0;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          .table-cell {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+          :deep(.el-table-column--selection) {
+            .cell {
+              padding-left: 14px;
+            }
+          }
+          :deep(.el-table::before),
+          :deep(.el-table__fixed::before),
+          :deep(.el-table__fixed-right::before) {
+            height: 0;
+          }
+          :deep(.el-table__row) {
+            .el-table__cell {
+              padding: 15px 0;
+            }
+            &:last-child {
+              .el-table__cell {
+                border: none;
+              }
+            }
+          }
+          :deep(.el-table__header) {
+            th {
+              padding: 9px 0 10px 0;
+              color: #333;
+              background: #f7f7f7 !important;
+              div {
+                font-family:
+                  PingFangSC,
+                  PingFang SC;
+                font-weight: bold;
+                font-size: 14px;
+                color: #333333;
+              }
+            }
+          }
+          :deep(.el-table__row--striped) {
+            td {
+              background: #f7fcff !important;
+            }
+          }
+          :deep(.el-table--enable-row-hover .el-table__body tr:hover > td.el-table__cell),
+          :deep(.el-table__body tr.hover-row > td.el-table__cell) {
+            background: rgba(35, 85, 216, 0.06) !important;
+          }
+        }
+      }
 
       .pagination-content {
         display: flex;
