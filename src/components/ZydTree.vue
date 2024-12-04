@@ -1,32 +1,36 @@
 <template>
-  <el-tree class="tree-line" ref="elTreeRef" v-bind="$attrs" v-on="$listeners">
-    <template v-for="(_, name) in $slots" v-slot:[name]>
+  <el-tree class="tree-line" ref="elTree" v-bind="$attrs" v-on="listeners">
+    <template v-for="(_, name) in slots" v-slot:[name]>
       <slot :name="name" />
     </template>
-    <template v-for="(_, name) in $scopedSlots" v-slot:[name]="data">
+    <template v-for="(_, name) in scopedSlots" v-slot:[name]="data">
       <slot :name="name" v-bind="data" />
     </template>
   </el-tree>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, getCurrentInstance } from 'vue';
 
-const elTreeRef = ref(null);
-const data = {};
+const { proxy } = getCurrentInstance();
+const elTree = ref(null);
+
+const extendMethod = () => {
+  const refMethod = Object.entries(elTree.value);
+  for (const [key, value] of refMethod) {
+    if (!(key.includes('$') || key.includes('_'))) {
+      proxy[key] = value;
+    }
+  }
+};
 
 onMounted(() => {
   extendMethod();
 });
 
-function extendMethod() {
-  const refMethod = Object.entries(elTreeRef.value);
-  for (const [key, value] of refMethod) {
-    if (!(key.includes('$') || key.includes('_'))) {
-      data[key] = value;
-    }
-  }
-}
+const listeners = proxy.$listeners;
+const slots = proxy.$slots;
+const scopedSlots = proxy.$scopedSlots;
 </script>
 
 <style lang="scss" scoped>
@@ -59,7 +63,6 @@ function extendMethod() {
     height: 26px;
     //background: #fff;
 
-    // height: 56px;
     > .custom-tree-node span:nth-child(1) {
       display: flex;
       flex-direction: row;

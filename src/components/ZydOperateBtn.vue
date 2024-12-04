@@ -75,12 +75,9 @@
   const remainConfig = ref([]);
 
 onMounted(() => {
-    console.error('=================> operateBtnConfig', operateBtnConfig)
     const showOperateBtnConfig = getShowOperateBtnConfig();
     topThreeConfig.value = showOperateBtnConfig.slice(0, partitionNum);
     remainConfig.value = showOperateBtnConfig.slice(partitionNum);
-    console.error('=================> topThreeConfig.value', topThreeConfig.value)
-    console.error('=================> remainConfig.value', remainConfig.value)
   })
 
   const commonFn = (item, type, e) => {

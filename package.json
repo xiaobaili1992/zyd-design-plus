@@ -1,6 +1,6 @@
 {
   "name": "zyd-design-plus",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "rollup build template",
   "keywords": [
     "rollup",
@@ -10,7 +10,9 @@
   ],
   "main": "./dist/index-es.js",
   "type": "module",
-  "sideEffects": false,
+  "sideEffects": [
+    "*.css"
+  ],
   "scripts": {
     "dev:docs": "vuepress dev docs",
     "build:docs": "vuepress build docs",
