@@ -75,5 +75,5 @@ export default {
     // }),
     // livereload('dist')
   ],
-  external: ['vue', 'element-ui', "dee-element-plus"],
+  external: ['vue', 'element-ui', "dee-svg-icon-plus"],
 };
