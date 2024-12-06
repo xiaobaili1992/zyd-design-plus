@@ -292,6 +292,7 @@
 import { ref, onMounted } from 'vue';
 import dayjs from 'dayjs';
 // import RenderCol from '../utils/RenderCol';
+import {SvgIcon} from "dee-svg-icon-plus"
 
 const props = defineProps({
   searchConfig: {

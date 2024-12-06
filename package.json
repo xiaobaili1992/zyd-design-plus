@@ -43,6 +43,7 @@
     "@vuepress/core": "^1.9.10",
     "@vuepress/plugin-register-components": "^1.9.10",
     "dayjs": "^1.11.11",
+    "dee-svg-icon-plus": "^0.0.9",
     "postcss": "^8.1",
     "rollup": "^4.12.0",
     "rollup-plugin-livereload": "^2.0.5",
