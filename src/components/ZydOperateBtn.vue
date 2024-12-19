@@ -2,7 +2,8 @@
   <div class="zyd-operate-btn">
     <span v-for="(item, index) in topThreeConfig" :key="item.key">
       <el-button
-        type="text"
+        type="primary"
+        link
         v-bind="item.attrs || {}"
         @click="(e) => commonFn(item, 'click', e)"
       >
@@ -27,13 +28,13 @@
     >
       <template #content>
         <div v-for="(item, index) in remainConfig" :key="item.key">
-          <el-button type="text" @click="(e) => commonFn(item, 'click', e)">
+          <el-button link type="default" class="tooltip-btn" @click="(e) => commonFn(item, 'click', e)">
             {{ item.label }}
           </el-button>
           <div class="zyd-operate-line" v-if="index !== remainConfig.length - 1"></div>
         </div>
       </template>
-      <el-button type="text">
+      <el-button link type="default">
         <i class="el-icon-more" style="color: #ccc; font-size: 12px" />
       </el-button>
     </el-tooltip>
@@ -105,7 +106,7 @@ onMounted(() => {
 .operate-tooltip {
   border-color: #fff !important;
   box-shadow: 0px 2px 10px 0px rgba(0, 0, 0, 0.08);
-  padding: 2px 10px;
+  padding: 2px 12px;
   .popper__arrow {
     border-bottom-color: #fff !important;
   }
@@ -116,8 +117,20 @@ onMounted(() => {
   }
   .zyd-operate-line {
     width: 100%;
-    height: 1px;
+    // height: 1px;
     background: #f0f0f0;
   }
+}
+.is-link {
+  font-family: PingFangSC, PingFang SC;
+  font-size: 14px;
+  color: #666666;
+  padding: 4px 0;
+}
+.tooltip-btn {
+  font-family: PingFangSC, PingFang SC;
+  font-size: 14px;
+  color: #666666;
+  padding: 4px 0;
 }
 </style>
