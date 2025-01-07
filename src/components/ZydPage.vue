@@ -416,7 +416,8 @@ const onReset = () => {
       .el-input,
       .el-select,
       .el-date-picker,
-      .el-time-picker {
+      .el-time-picker,
+      .el-cascader {
         display: flex;
         align-content: center;
         width: 240px;
