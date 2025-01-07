@@ -1,3 +1,4 @@
+```vue
 <!-- 导入文件组件 -->
 
 <template>
@@ -79,8 +80,9 @@
   </el-dialog>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue';
+import { ElMessage } from 'element-plus';
 
 const templateImg =
   'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAqBJREFUWEftV01IFGEYft8ZzbY1TCwJsYPs7I4QeVAiOqR0EcRDBc2uRm6XOkREXbxEh+3QJbAIugX9KEK7c6hTlFJEBEUlRV129gfMfhBFykLdcvd7YsYRpHZ1dtYOwc513udnnvf7vvcbJpfPXu2jZ5rmX4FRyZXy7tSw/7sbKnYDMjFKKNkJkXto4ZkPpWPqPTdc7g1oycOgnG6JSnwsHVUHywbKCZQTKCdQTuD/TMAfTLQTRKfsqb4SH2yccfoVSgmzYNeRD7ULi5mzMmOEfcG4QaAAkXQ+rQcuFjKgaMYAmBq8VfKZd0PKVD4DzeFPddnM3GWAxA7vhpNPbjVl8vH5tUS/IHGJiT+zT4vDmqjEQyldDecDKKFkK0RubKmOntfUqh2zX1MHVk7DVhEYfsPGKED7zTqZuTsRU+/n5Qsa1wEct/gcGTidrMJkbpyIttuEV5nkZysNMEgFcM42OSNvrmsybmz7sS4GrAuIluwAiUdEkO3EoiCElu4jHANIIwITsyCgO603PyjYzmITWCZa7t1qC5WZL6RiamS1GsWtASuJoHEXwMF8Akw0cnSn2hWJsPhnBtq0dM0sZV+DoPwhMlHpqW51spVLSsAUVXvjLdksvyCCx150vyTifQldfenkHCnZgCkSCBk9AhgEWJIkPpGMBm46EbfbWNw2LEQc6DW2iqzEKd0/7VR8XQ0UI7qydl1a4Fb8rwQULb4IogpivpOOqb2lEDvFKkHjNoAwMWfMozhuLmxm+tK4qcpXaIA4JV+rrqVv0jv/81sCoAYmfstK0LgG4JR9pD4losdrkZT0HtQFwh5bL8Itfan6uUzuPRHqSyIuHmx4N25ps35O1Z6JhqxYGGBCuxlN8VxFIJjGmXi0BhX9Y7pv9je+uLYV/lZ3+AAAAABJRU5ErkJggg==';
@@ -112,22 +114,40 @@ const importLoading = defineModel('loading');
  * httpRequest: 自定义文件上传方法,走el-upload的http-request方法
  *   file: 待上传的文件对象
  */
+interface TemplateItem {
+  name: string;
+  url: string;
+}
 
-const { downloadTemplate, isXlsx = true, submit, httpRequest } = defineProps();
+interface DownloadTemplate {
+  name: string;
+  url?: string;
+  list?: TemplateItem[];
+}
+
+interface Props {
+  downloadTemplate: DownloadTemplate;
+  dir?: string;
+  isXlsx?: boolean;
+  submit: (file: File | string) => Promise<void>;
+  httpRequest: (file: { file: File }) => Promise<any>;
+}
+
+const { downloadTemplate, isXlsx = true, submit, httpRequest } = defineProps<Props>();
 
 // 上传信息管理
 const uploadInfo = ref({
-  fileName: '', // 文件名
-  uploadUrl: '', // 上传的文件URL
-  formFile: null, // 上传的文件对象
-  fileType: 'url', // 文件类型
+  fileName: '' as string, // 文件名
+  uploadUrl: '' as string, // 上传的文件URL
+  formFile: null as File | null, // 上传的文件对象
+  fileType: 'url' as 'file' | 'url', // 文件类型
 });
 
 /**
  * 拦截文件上传请求, 获取上传文件信息
  * @param file 包含待上传文件的对象
  */
-const handleHttpRequest = async () => {
+const handleHttpRequest = async (file: { file: File }): Promise<void> => {
   try {
     if (!httpRequest) {
       // 无自定义上传时直接使用原始文件
@@ -157,7 +177,7 @@ const handleHttpRequest = async () => {
  * 提交导入
  *
  */
-const submitImport = async ()=> {
+const submitImport = async (): Promise<void> => {
   try {
     if (!uploadInfo.value.uploadUrl && !uploadInfo.value.formFile) {
       ElMessage.error('请先选择需要上传的文件');
@@ -167,7 +187,7 @@ const submitImport = async ()=> {
     importLoading.value = true;
     const file =
       uploadInfo.value.fileType === 'file' ? uploadInfo.value.formFile : uploadInfo.value.uploadUrl;
-    await submit(file);
+    await submit(file as File | string);
   } catch (error) {
     console.error('导入失败:', error);
   } finally {
@@ -186,7 +206,7 @@ const resetUploadInfo = () => {
 };
 
 // 处理关闭操作
-const handleClose = () => {
+const handleClose = (): void => {
   resetUploadInfo();
   importModal.value = false;
 };
@@ -194,7 +214,7 @@ const handleClose = () => {
 defineExpose({
   open: () => (importModal.value = true),
   close,
-  loading: (bool) => {
+  loading: (bool: boolean) => {
     importLoading.value = bool;
   },
 });
@@ -296,3 +316,5 @@ defineExpose({
   line-height: 1;
 }
 </style>
+
+```
