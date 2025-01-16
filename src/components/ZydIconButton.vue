@@ -32,6 +32,7 @@
   </div>
 </template>
 <script setup>
+import { SvgIcon } from "dee-svg-icon-plus"
 defineProps({
   /**
    * 图标类名，具体详见`dee-svg-icon`的配置名称

@@ -220,29 +220,62 @@
                 width="55"
                 :selectable="selectableRow"
               ></el-table-column>
-              <el-table-column
-                v-for="item in tableConfig.columns || []"
-                :prop="item.prop"
-                :label="item.label"
-                :key="item.key"
-                :sortable="item.sortable"
-                :width="item.width"
-                :fixed="item.fixed"
-                v-bind="item.attrs || {}"
-              >
-                <!-- <template slot="header" v-if="item.headerRender">
-                  <RenderCol :render="item.headerRender" />
-                </template> -->
-                <template #default="scope">
-                  <!-- <RenderCol
-                    v-if="item.render"
-                    :column="item"
-                    :row="scope.row"
-                    :render="item.render"
-                    :index="scope.$index"
-                  /> -->
-                  <slot name="bodyCell" :column="item" :record="scope.row" :index="scope.$index">
-                    <template>
+              <template v-for="item in tableConfig.columns || []" :key="item.key">
+                <el-table-column
+                  v-if="
+                    Object.prototype.hasOwnProperty.call(item, 'children') &&
+                    item.children.length > 0
+                  "
+                  :prop="item.prop"
+                  :label="item.label"
+                  :width="item.width"
+                  :fixed="item.fixed"
+                  v-bind="item.attrs || {}"
+                >
+                  <el-table-column
+                    v-for="it in item.children"
+                    :key="it.key"
+                    :prop="it.prop"
+                    :label="it.label"
+                    :width="it.width"
+                    v-bind="it.attrs || {}"
+                  >
+                    <template #default="scope">
+                      <slot
+                        name="bodyCell"
+                        :column="item"
+                        :record="scope.row"
+                        :index="scope.$index"
+                      >
+                        <el-tooltip
+                          v-if="item.tooltip && scope.row[item.key]"
+                          class="item"
+                          effect="dark"
+                          :content="renderColumnContent(item, scope.row)"
+                          :placement="item.tooltip"
+                        >
+                          <div :class="item.ellipsis ? 'table-cell' : ''">
+                            {{ renderColumnContent(item, scope.row) }}
+                          </div>
+                        </el-tooltip>
+                        <div v-else :class="item.ellipsis ? 'table-cell' : ''">
+                          {{ renderColumnContent(item, scope.row) }}
+                        </div>
+                      </slot>
+                    </template>
+                  </el-table-column>
+                </el-table-column>
+                <el-table-column
+                  v-else
+                  :prop="item.prop"
+                  :label="item.label"
+                  :sortable="item.sortable"
+                  :width="item.width"
+                  :fixed="item.fixed"
+                  v-bind="item.attrs || {}"
+                >
+                  <template #default="scope">
+                    <slot name="bodyCell" :column="item" :record="scope.row" :index="scope.$index">
                       <el-tooltip
                         v-if="item.tooltip && scope.row[item.key]"
                         class="item"
@@ -257,10 +290,10 @@
                       <div v-else :class="item.ellipsis ? 'table-cell' : ''">
                         {{ renderColumnContent(item, scope.row) }}
                       </div>
-                    </template>
-                  </slot>
-                </template>
-              </el-table-column>
+                    </slot>
+                  </template>
+                </el-table-column>
+              </template>
             </el-table>
           </div>
         </div>
@@ -289,10 +322,9 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch, toRef } from 'vue';
 import dayjs from 'dayjs';
-// import RenderCol from '../utils/RenderCol';
-import {SvgIcon} from "dee-svg-icon-plus"
+import { SvgIcon } from 'dee-svg-icon-plus';
 
 const props = defineProps({
   searchConfig: {
@@ -328,10 +360,18 @@ const props = defineProps({
 
 const emit = defineEmits(['onSearch', 'onReset']);
 
-const { searchConfig, tableConfig } = props;
+const tableConfig = toRef(props, 'tableConfig');
+const searchConfig = toRef(props, 'searchConfig');
 
 const searchValues = ref({});
-
+watch(
+  () => searchConfig.value,
+  () => {
+    const initSearchValues = setSearchValue();
+    searchValues.value = { ...initSearchValues };
+  },
+  { deep: true },
+);
 onMounted(() => {
   const initSearchValues = setSearchValue();
   searchValues.value = { ...initSearchValues };
@@ -339,7 +379,7 @@ onMounted(() => {
 
 const setSearchValue = () => {
   const obj = {};
-  searchConfig?.forEach((item) => {
+  searchConfig.value?.forEach((item) => {
     obj[item.key] = item.defaultValue;
   });
   return obj;
@@ -404,11 +444,16 @@ const onReset = () => {
       justify-content: flex-start;
       width: 100%;
       margin-bottom: 8px;
+      :deep(.el-input__prefix-inner),
+      :deep(.ep-input__prefix-inner) {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+      }
 
       .input-icon {
         position: relative;
-        top: 3px;
-        left: 5px;
         width: 14px;
         height: 14px;
         fill: #bfbfbf;
