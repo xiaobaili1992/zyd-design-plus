@@ -8,67 +8,69 @@
     :before-close="handleClose"
     :lock-scroll="false"
   >
-    <div class="template">
-      <!-- 单文件模板 -->
-      <template v-if="'url' in downloadTemplate">
-        <img :src="templateImg" alt="" />
-        <el-link type="primary" :underline="false" :href="downloadTemplate.url">
-          {{ downloadTemplate.name }}
-        </el-link>
-      </template>
-      <!-- 多文件模板 -->
-      <template v-else-if="'list' in downloadTemplate">
-        <el-dropdown trigger="click" :teleported="false">
-          <span style="display: flex; align-items: center">
-            <img :src="templateImg" alt="" />
-            <el-link type="primary" :underline="false">
-              {{ downloadTemplate.name }}
-            </el-link>
-          </span>
+    <div class="upload-container">
+      <div class="template">
+        <!-- 单文件模板 -->
+        <template v-if="'url' in downloadTemplate">
+          <img :src="templateImg" alt="" />
+          <el-link type="primary" :underline="false" :href="downloadTemplate?.url">
+            {{ downloadTemplate?.name }}
+          </el-link>
+        </template>
+        <!-- 多文件模板 -->
+        <template v-else-if="'list' in downloadTemplate">
+          <el-dropdown trigger="click" :teleported="false">
+            <span style="display: flex; align-items: center">
+              <img :src="templateImg" alt="" />
+              <el-link type="primary" :underline="false">
+                {{ downloadTemplate?.name }}
+              </el-link>
+            </span>
 
-          <template #dropdown>
-            <el-dropdown-menu>
-              <el-dropdown-item v-for="item in downloadTemplate.list" :key="item.url">
-                <el-link :underline="false" :href="item.url">
-                  {{ item.name }}
-                </el-link>
-              </el-dropdown-item>
-            </el-dropdown-menu>
-          </template>
-        </el-dropdown>
-      </template>
-    </div>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item v-for="item in downloadTemplate?.list" :key="item?.url">
+                  <el-link :underline="false" :href="item?.url">
+                    {{ item?.name }}
+                  </el-link>
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
+        </template>
+      </div>
 
-    <div class="upload">
-      <el-upload
-        drag
-        :show-file-list="false"
-        action="void"
-        :auto-upload="true"
-        v-bind="$attrs"
-        :http-request="handleHttpRequest"
-      >
-        <div v-if="uploadInfo.fileName != ''" class="upload-item">
-          <div class="image">
-            <img v-if="isXlsx" :src="successImg" alt="" />
-            <img v-else :src="commonImg" alt="" />
+      <div class="upload">
+        <el-upload
+          drag
+          :show-file-list="false"
+          action="void"
+          :auto-upload="true"
+          v-bind="$attrs"
+          :http-request="handleHttpRequest"
+        >
+          <div v-if="uploadInfo.fileName != ''" class="upload-item">
+            <div class="image">
+              <img v-if="isXlsx" :src="successImg" alt="" />
+              <img v-else :src="commonImg" alt="" />
+            </div>
+            <div class="text">
+              <span class="span3">{{ uploadInfo?.fileName || '--' }}</span>
+            </div>
           </div>
-          <div class="text">
-            <span class="span3">{{ uploadInfo.fileName || '--' }}</span>
+          <div v-else class="upload-item">
+            <div class="image">
+              <img v-if="isXlsx" :src="beforeImg" alt="" />
+              <img v-else :src="commonImg" alt="" />
+            </div>
+            <div class="text">
+              <span class="span2">可直接将待导入的文件拖拽到本区域，或</span>
+              <span class="span1">点击上传</span>
+            </div>
+            <div class="zi">请按模板要求整理导入数据，确保数据的真实性和格式的准确性</div>
           </div>
-        </div>
-        <div v-else class="upload-item">
-          <div class="image">
-            <img v-if="isXlsx" :src="beforeImg" alt="" />
-            <img v-else :src="commonImg" alt="" />
-          </div>
-          <div class="text">
-            <span class="span2">可直接将待导入的文件拖拽到本区域，或</span>
-            <span class="span1">点击上传</span>
-          </div>
-          <div class="zi">请按模板要求整理导入数据，确保数据的真实性和格式的准确性</div>
-        </div>
-      </el-upload>
+        </el-upload>
+      </div>
     </div>
     <template #footer>
       <span class="dialog-footer">
@@ -79,7 +81,7 @@
   </el-dialog>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { ref } from 'vue';
 import { ElMessage } from 'element-plus';
 
@@ -113,40 +115,23 @@ const importLoading = defineModel('loading');
  * httpRequest: 自定义文件上传方法,走el-upload的http-request方法
  *   file: 待上传的文件对象
  */
-interface TemplateItem {
-  name: string;
-  url: string;
-}
 
-interface DownloadTemplate {
-  name: string;
-  url?: string;
-  list?: TemplateItem[];
-}
-
-interface Props {
-  downloadTemplate: DownloadTemplate;
-  dir?: string;
-  isXlsx?: boolean;
-  submit: (file: File | string) => Promise<void>;
-  httpRequest: (file: { file: File }) => Promise<any>;
-}
-
-const { downloadTemplate, isXlsx = true, submit, httpRequest } = defineProps<Props>();
+const { downloadTemplate, isXlsx = true, httpRequest } = defineProps(['downloadTemplate', 'isXlsx', 'httpRequest']);
+const emit = defineEmits(['submit'])
 
 // 上传信息管理
 const uploadInfo = ref({
-  fileName: '' as string, // 文件名
-  uploadUrl: '' as string, // 上传的文件URL
-  formFile: null as File | null, // 上传的文件对象
-  fileType: 'url' as 'file' | 'url', // 文件类型
+  fileName: '', // 文件名
+  uploadUrl: '', // 上传的文件URL
+  formFile: null, // 上传的文件对象
+  fileType: 'url', // 文件类型
 });
 
 /**
  * 拦截文件上传请求, 获取上传文件信息
  * @param file 包含待上传文件的对象
  */
-const handleHttpRequest = async (file: { file: File }): Promise<void> => {
+const handleHttpRequest = async (file) => {
   try {
     if (!httpRequest) {
       // 无自定义上传时直接使用原始文件
@@ -176,7 +161,7 @@ const handleHttpRequest = async (file: { file: File }): Promise<void> => {
  * 提交导入
  *
  */
-const submitImport = async (): Promise<void> => {
+const submitImport = async () => {
   try {
     if (!uploadInfo.value.uploadUrl && !uploadInfo.value.formFile) {
       ElMessage.error('请先选择需要上传的文件');
@@ -186,7 +171,8 @@ const submitImport = async (): Promise<void> => {
     importLoading.value = true;
     const file =
       uploadInfo.value.fileType === 'file' ? uploadInfo.value.formFile : uploadInfo.value.uploadUrl;
-    await submit(file as File | string);
+    // await submit(file);
+    await emit('submit', file)
   } catch (error) {
     console.error('导入失败:', error);
   } finally {
@@ -205,7 +191,7 @@ const resetUploadInfo = () => {
 };
 
 // 处理关闭操作
-const handleClose = (): void => {
+const handleClose = () => {
   resetUploadInfo();
   importModal.value = false;
 };
@@ -213,75 +199,82 @@ const handleClose = (): void => {
 defineExpose({
   open: () => (importModal.value = true),
   close,
-  loading: (bool: boolean) => {
+  loading: (bool) => {
     importLoading.value = bool;
   },
 });
 </script>
 
 <style lang="scss" scoped>
-.template {
-  display: flex;
-  align-items: center;
-  margin-bottom: 12px;
+.upload-container {
+  padding: 20px;
+  .template {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
 
-  img {
-    width: 16px;
-    height: 16px;
-    margin-right: 4px;
-  }
-}
-
-.upload {
-  border: 2px dashed rgba(211, 219, 235, 0.8);
-  border-radius: 2px;
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: #fbfcff;
-
-  .upload-demo {
-    width: 100%;
+    img {
+      width: 16px;
+      height: 16px;
+      margin-right: 4px;
+    }
   }
 
-  .upload-item {
-    .image {
+  .upload {
+    border: 2px dashed rgba(211, 219, 235, 0.8);
+    border-radius: 2px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #fbfcff;
+
+    .upload-demo {
       width: 100%;
-      height: 72px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin-bottom: 12px;
-
-      img {
-        width: 66px;
-        height: 100%;
-      }
     }
 
-    .text {
-      font-size: 16px;
-      color: rgba(0, 0, 0, 0.4);
+    .upload-item {
+      .image {
+        width: 100%;
+        height: 72px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 12px;
 
-      .span1 {
-        color: #2355d8;
-        text-decoration: underline;
-        text-underline-offset: 4px;
-        margin-left: 4px;
+        img {
+          width: 66px;
+          height: 100%;
+        }
       }
 
-      .span3 {
-        color: #333333;
-      }
-    }
+      .text {
+        font-size: 16px;
+        color: rgba(0, 0, 0, 0.4);
 
-    .zi {
-      font-size: 12px;
-      color: #cad1e0;
+        .span1 {
+          color: #2355d8;
+          text-decoration: underline;
+          text-underline-offset: 4px;
+          margin-left: 4px;
+        }
+
+        .span3 {
+          color: #333333;
+        }
+      }
+
+      .zi {
+        font-size: 12px;
+        color: #cad1e0;
+      }
     }
   }
+  :deep(.ep-dialog__body){
+    padding: 0;
+  }
 }
+
 
 :deep(.ep-dropdown-menu) {
   padding: 0 !important;
