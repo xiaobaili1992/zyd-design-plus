@@ -240,29 +240,24 @@
                     :width="it.width"
                     v-bind="it.attrs || {}"
                   >
-                    <template #default="scope">
-                      <slot
-                        name="bodyCell"
-                        :column="item"
-                        :record="scope.row"
-                        :index="scope.$index"
+                  <template #default="scope">
+                    <slot name="bodyCell" :column="it" :record="scope.row" :index="scope.$index">
+                      <el-tooltip
+                        v-if="it.tooltip && scope.row[it.key]"
+                        class="item"
+                        effect="dark"
+                        :content="renderColumnContent(it, scope.row)"
+                        :placement="it.tooltip"
                       >
-                        <el-tooltip
-                          v-if="item.tooltip && scope.row[item.key]"
-                          class="item"
-                          effect="dark"
-                          :content="renderColumnContent(item, scope.row)"
-                          :placement="item.tooltip"
-                        >
-                          <div :class="item.ellipsis ? 'table-cell' : ''">
-                            {{ renderColumnContent(item, scope.row) }}
-                          </div>
-                        </el-tooltip>
-                        <div v-else :class="item.ellipsis ? 'table-cell' : ''">
-                          {{ renderColumnContent(item, scope.row) }}
+                        <div :class="it.ellipsis ? 'table-cell' : ''">
+                          {{ renderColumnContent(it, scope.row) }}
                         </div>
-                      </slot>
-                    </template>
+                      </el-tooltip>
+                      <div v-else :class="it.ellipsis ? 'table-cell' : ''">
+                        {{ renderColumnContent(it, scope.row) }}
+                      </div>
+                    </slot>
+                  </template>
                   </el-table-column>
                 </el-table-column>
                 <el-table-column
